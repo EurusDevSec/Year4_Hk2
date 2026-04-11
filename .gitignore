@@ -1,0 +1,47 @@
+# ===== Flutter / Dart =====
+**/.metadata
+**/pubspec.lock
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.pub-cache/
+**/.pub/
+
+# ===== Android =====
+**/local.properties
+**/android/gradlew
+**/android/gradlew.bat
+**/android/gradle/wrapper/gradle-wrapper.jar
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+
+# ===== IDE / Editor =====
+**/.idea/
+**/*.iml
+**/*.ipr
+**/*.iws
+.vscode/
+
+# ===== Skill / Tool lock =====
+**/skills-lock.json
+
+# ===== Python / Jupyter (Machine Learning) =====
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/.ipynb_checkpoints/
+**/*.egg-info/
+
+# ===== Archives (too large for GitHub) =====
+*.zip
+*.rar
+*.tar
+*.tar.gz
+*.7z
+
+# ===== OS =====
+.DS_Store
+**/Thumbs.db
+**/ehthumbs.db
