@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_navigation_screen.dart';
 import 'screens/movie_detail_screen.dart';
-import 'screens/search_screen.dart';
-import 'screens/profile_screen.dart';
+import 'screens/categories_screen.dart';
+import 'models/movie.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,15 +34,17 @@ class CineMaxApp extends StatelessWidget {
       initialRoute: '/splash',
       routes: {
         '/splash': (context) => const SplashScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/detail': (context) => const MovieDetailScreen(),
-        '/search': (context) => const SearchScreen(),
-        '/profile': (context) => const ProfileScreen(),
+        '/home': (context) => const MainNavigationScreen(),
+        '/detail': (context) {
+          final movie = ModalRoute.of(context)!.settings.arguments as Movie?;
+          return MovieDetailScreen(movie: movie);
+        },
+        '/categories': (context) => const CategoriesScreen(),
       },
 
       // Unknown route handler
       onUnknownRoute: (settings) =>
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
     );
   }
 }

@@ -25,10 +25,12 @@ class _SearchScreenState extends State<SearchScreen> {
         _searchResults = [];
       } else {
         _searchResults = allMovies
-            .where((m) =>
-                m.title.toLowerCase().contains(query.toLowerCase()) ||
-                m.genre.toLowerCase().contains(query.toLowerCase()) ||
-                m.director.toLowerCase().contains(query.toLowerCase()))
+            .where(
+              (m) =>
+                  m.title.toLowerCase().contains(query.toLowerCase()) ||
+                  m.genre.toLowerCase().contains(query.toLowerCase()) ||
+                  m.director.toLowerCase().contains(query.toLowerCase()),
+            )
             .toList();
       }
     });
@@ -46,16 +48,15 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: AppTheme.background,
       appBar: AppBar(
         backgroundColor: AppTheme.background,
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: Colors.white, size: 20),
+        leading: const SizedBox.shrink(),
+        title: Text(
+          'Search',
+          style: GoogleFonts.inter(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.textPrimary,
+          ),
         ),
-        title: Text('Search',
-            style: GoogleFonts.inter(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.textPrimary)),
       ),
       body: Column(
         children: [
@@ -76,21 +77,27 @@ class _SearchScreenState extends State<SearchScreen> {
                 decoration: InputDecoration(
                   hintText: 'Search movies, genres, directors...',
                   hintStyle: GoogleFonts.inter(color: AppTheme.textMuted),
-                  prefixIcon: const Icon(Icons.search_rounded,
-                      color: AppTheme.textMuted),
+                  prefixIcon: const Icon(
+                    Icons.search_rounded,
+                    color: AppTheme.textMuted,
+                  ),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? GestureDetector(
                           onTap: () {
                             _searchController.clear();
                             _search('');
                           },
-                          child: const Icon(Icons.close_rounded,
-                              color: AppTheme.textMuted),
+                          child: const Icon(
+                            Icons.close_rounded,
+                            color: AppTheme.textMuted,
+                          ),
                         )
                       : null,
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                 ),
               ),
             ),
@@ -98,9 +105,7 @@ class _SearchScreenState extends State<SearchScreen> {
           const SizedBox(height: 8),
 
           // Results
-          Expanded(
-            child: _buildContent(),
-          ),
+          Expanded(child: _buildContent()),
         ],
       ),
     );
@@ -123,11 +128,14 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Browse by Genre',
-              style: GoogleFonts.inter(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.textPrimary)),
+          Text(
+            'Browse by Genre',
+            style: GoogleFonts.inter(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.textPrimary,
+            ),
+          ),
           const SizedBox(height: 14),
           GridView.builder(
             shrinkWrap: true,
@@ -164,9 +172,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Text(
                     genres[index],
                     style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               );
@@ -182,18 +191,25 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.search_off_rounded,
-              size: 64, color: AppTheme.textMuted),
+          const Icon(
+            Icons.search_off_rounded,
+            size: 64,
+            color: AppTheme.textMuted,
+          ),
           const SizedBox(height: 16),
-          Text('No results found',
-              style: GoogleFonts.inter(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textSecondary)),
+          Text(
+            'No results found',
+            style: GoogleFonts.inter(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textSecondary,
+            ),
+          ),
           const SizedBox(height: 8),
-          Text('Try a different keyword',
-              style: GoogleFonts.inter(
-                  fontSize: 14, color: AppTheme.textMuted)),
+          Text(
+            'Try a different keyword',
+            style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textMuted),
+          ),
         ],
       ),
     );
@@ -208,7 +224,9 @@ class _SearchScreenState extends State<SearchScreen> {
           child: Text(
             '${_searchResults.length} result${_searchResults.length != 1 ? 's' : ''} found',
             style: GoogleFonts.inter(
-                fontSize: 13, color: AppTheme.textSecondary),
+              fontSize: 13,
+              color: AppTheme.textSecondary,
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -218,14 +236,10 @@ class _SearchScreenState extends State<SearchScreen> {
             itemCount: _searchResults.length,
             itemBuilder: (context, index) {
               final movie = _searchResults[index];
-              final colorHex =
-                  int.parse('FF${movie.posterColor}', radix: 16);
+              final colorHex = int.parse('FF${movie.posterColor}', radix: 16);
               return GestureDetector(
-                onTap: () => Navigator.pushNamed(
-                  context,
-                  '/detail',
-                  arguments: movie,
-                ),
+                onTap: () =>
+                    Navigator.pushNamed(context, '/detail', arguments: movie),
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(14),
@@ -252,8 +266,10 @@ class _SearchScreenState extends State<SearchScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(
-                          child: Text(movie.iconSymbol,
-                              style: const TextStyle(fontSize: 28)),
+                          child: Text(
+                            movie.iconSymbol,
+                            style: const TextStyle(fontSize: 28),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -262,48 +278,67 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(movie.title,
-                                style: GoogleFonts.inter(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppTheme.textPrimary)),
+                            Text(
+                              movie.title,
+                              style: GoogleFonts.inter(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
                             const SizedBox(height: 4),
-                            Text('${movie.year} • ${movie.duration}',
-                                style: GoogleFonts.inter(
-                                    fontSize: 12,
-                                    color: AppTheme.textSecondary)),
+                            Text(
+                              '${movie.year} • ${movie.duration}',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
                             const SizedBox(height: 6),
                             Row(
                               children: [
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 3),
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: AppTheme.primary.withOpacity(0.15),
                                     borderRadius: BorderRadius.circular(6),
                                   ),
-                                  child: Text(movie.genre,
-                                      style: GoogleFonts.inter(
-                                          fontSize: 11,
-                                          color: AppTheme.primary,
-                                          fontWeight: FontWeight.w600)),
+                                  child: Text(
+                                    movie.genre,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: AppTheme.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
-                                const Icon(Icons.star_rounded,
-                                    color: AppTheme.gold, size: 14),
+                                const Icon(
+                                  Icons.star_rounded,
+                                  color: AppTheme.gold,
+                                  size: 14,
+                                ),
                                 const SizedBox(width: 3),
-                                Text(movie.rating.toStringAsFixed(1),
-                                    style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        color: AppTheme.gold,
-                                        fontWeight: FontWeight.w600)),
+                                Text(
+                                  movie.rating.toStringAsFixed(1),
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: AppTheme.gold,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
                         ),
                       ),
-                      const Icon(Icons.chevron_right_rounded,
-                          color: AppTheme.textMuted),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: AppTheme.textMuted,
+                      ),
                     ],
                   ),
                 ),

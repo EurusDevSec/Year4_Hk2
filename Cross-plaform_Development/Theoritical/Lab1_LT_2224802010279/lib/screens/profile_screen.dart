@@ -21,14 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: AppTheme.background,
       appBar: AppBar(
         backgroundColor: AppTheme.background,
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
-            size: 20,
-          ),
-        ),
+        leading: const SizedBox.shrink(),
         title: Text(
           'Profile',
           style: GoogleFonts.inter(

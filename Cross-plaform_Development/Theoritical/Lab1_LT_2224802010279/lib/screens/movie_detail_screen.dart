@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import '../models/movie.dart';
+import '../data/movie_data.dart';
+import '../services/watchlist_service.dart';
 
 class MovieDetailScreen extends StatefulWidget {
-  const MovieDetailScreen({super.key});
+  final Movie? movie;
+
+  const MovieDetailScreen({super.key, this.movie});
 
   @override
   State<MovieDetailScreen> createState() => _MovieDetailScreenState();
@@ -16,6 +20,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
   bool _isFavorite = false;
+  final WatchlistService _watchlistService = WatchlistService();
 
   @override
   void initState() {
@@ -24,13 +29,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
-    _slideAnim =
-        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    _fadeAnim = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    _slideAnim = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     _controller.forward();
   }
 
@@ -42,8 +48,11 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Receives Movie object via Navigator arguments
-    final movie = ModalRoute.of(context)!.settings.arguments as Movie;
+    // Receives Movie object via constructor or Navigator arguments
+    final movie =
+        widget.movie ??
+        (ModalRoute.of(context)?.settings.arguments as Movie?) ??
+        MovieData.getAllMovies()[0];
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -62,24 +71,40 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                   color: Colors.black.withOpacity(0.5),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white, size: 18),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
             ),
             actions: [
               GestureDetector(
                 onTap: () {
                   setState(() => _isFavorite = !_isFavorite);
+
+                  if (_isFavorite) {
+                    _watchlistService.addToWatchlist(movie);
+                  } else {
+                    _watchlistService.removeFromWatchlist(movie);
+                  }
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                        _isFavorite ? '❤️ Added to Watchlist!' : '💔 Removed from Watchlist',
+                        _isFavorite
+                            ? '❤️ Added to Watchlist!'
+                            : '💔 Removed from Watchlist',
                         style: GoogleFonts.inter(color: Colors.white),
                       ),
-                      backgroundColor: _isFavorite ? AppTheme.primary : AppTheme.surfaceVariant,
+                      backgroundColor: _isFavorite
+                          ? AppTheme.primary
+                          : AppTheme.surfaceVariant,
                       duration: const Duration(seconds: 2),
                       behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   );
                 },
@@ -90,7 +115,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    _isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                    _isFavorite
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
                     color: _isFavorite ? AppTheme.primary : Colors.white,
                     size: 20,
                   ),
@@ -131,18 +158,24 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                           const SizedBox(width: 12),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: AppTheme.secondary.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                  color: AppTheme.secondary.withOpacity(0.5)),
+                                color: AppTheme.secondary.withOpacity(0.5),
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.star_rounded,
-                                    color: AppTheme.gold, size: 18),
+                                const Icon(
+                                  Icons.star_rounded,
+                                  color: AppTheme.gold,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   movie.rating.toStringAsFixed(1),
@@ -164,7 +197,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          _chip(Icons.calendar_today_rounded, movie.year.toString()),
+                          _chip(
+                            Icons.calendar_today_rounded,
+                            movie.year.toString(),
+                          ),
                           _chip(Icons.timer_rounded, movie.duration),
                           _chip(Icons.movie_filter_rounded, movie.genre),
                         ],
@@ -177,19 +213,26 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () => _showPlayDialog(context, movie),
-                              icon: const Icon(Icons.play_arrow_rounded,
-                                  size: 24),
-                              label: Text('Play Now',
-                                  style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 15)),
+                              icon: const Icon(
+                                Icons.play_arrow_rounded,
+                                size: 24,
+                              ),
+                              label: Text(
+                                'Play Now',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
+                              ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppTheme.primary,
                                 foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 14),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14)),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
                                 elevation: 0,
                               ),
                             ),
@@ -209,7 +252,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                               label: Text(
                                 _isFavorite ? 'Saved' : 'Watchlist',
                                 style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600, fontSize: 14),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
                               ),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: _isFavorite
@@ -220,10 +265,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                                       ? AppTheme.primary
                                       : AppTheme.cardBorder,
                                 ),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 14),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14)),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
                               ),
                             ),
                           ),
@@ -282,9 +329,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
                         child: TextButton.icon(
                           onPressed: () => Navigator.pop(context),
                           icon: const Icon(Icons.arrow_back_rounded),
-                          label: Text('Back to Home',
-                              style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600)),
+                          label: Text(
+                            'Back to Home',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                           style: TextButton.styleFrom(
                             foregroundColor: AppTheme.textSecondary,
                             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -316,10 +366,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                posterColor.withOpacity(0.9),
-                AppTheme.background,
-              ],
+              colors: [posterColor.withOpacity(0.9), AppTheme.background],
             ),
           ),
         ),
@@ -332,7 +379,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
               Text(movie.iconSymbol, style: const TextStyle(fontSize: 90)),
               const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -385,9 +435,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
         children: [
           Icon(icon, size: 13, color: AppTheme.textMuted),
           const SizedBox(width: 5),
-          Text(label,
-              style: GoogleFonts.inter(
-                  fontSize: 12, color: AppTheme.textSecondary)),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              color: AppTheme.textSecondary,
+            ),
+          ),
         ],
       ),
     );
@@ -397,12 +451,19 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary)),
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.textPrimary,
+          ),
+        ),
         const SizedBox(height: 4),
-        Text(value,
-            style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textSecondary)),
+        Text(
+          value,
+          style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textSecondary),
+        ),
       ],
     );
   }
@@ -422,17 +483,23 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
           CircleAvatar(
             radius: 18,
             backgroundColor: AppTheme.primary.withOpacity(0.2),
-            child: Text(name[0], style: GoogleFonts.inter(
-              color: AppTheme.primary, fontWeight: FontWeight.w700)),
+            child: Text(
+              name[0],
+              style: GoogleFonts.inter(
+                color: AppTheme.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               name,
               style: GoogleFonts.inter(
-                  fontSize: 11,
-                  color: AppTheme.textSecondary,
-                  fontWeight: FontWeight.w500),
+                fontSize: 11,
+                color: AppTheme.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -448,31 +515,44 @@ class _MovieDetailScreenState extends State<MovieDetailScreen>
       builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.surfaceVariant,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Now Playing',
-            style: GoogleFonts.inter(
-                fontWeight: FontWeight.w700, color: AppTheme.textPrimary)),
+        title: Text(
+          'Now Playing',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            color: AppTheme.textPrimary,
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(movie.iconSymbol, style: const TextStyle(fontSize: 50)),
             const SizedBox(height: 12),
-            Text(movie.title,
-                style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textPrimary),
-                textAlign: TextAlign.center),
+            Text(
+              movie.title,
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 8),
-            Text('🎬 Starting playback...',
-                style: GoogleFonts.inter(
-                    fontSize: 13, color: AppTheme.textSecondary)),
+            Text(
+              '🎬 Starting playback...',
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: AppTheme.textSecondary,
+              ),
+            ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Close',
-                style: GoogleFonts.inter(color: AppTheme.primary)),
+            child: Text(
+              'Close',
+              style: GoogleFonts.inter(color: AppTheme.primary),
+            ),
           ),
         ],
       ),

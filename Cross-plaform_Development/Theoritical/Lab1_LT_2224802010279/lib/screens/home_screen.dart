@@ -15,7 +15,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedGenreIndex = 0;
-  int _bottomNavIndex = 0;
   final List<String> _genres = MovieData.getGenres();
   List<Movie> _filteredMovies = MovieData.getAllMovies();
 
@@ -33,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      bottomNavigationBar: _buildBottomNav(),
       body: CustomScrollView(
         slivers: [
           // App Bar
@@ -50,8 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: AppTheme.primary,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.local_movies_rounded,
-                      color: Colors.white, size: 20),
+                  child: const Icon(
+                    Icons.local_movies_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -83,7 +84,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     border: Border.all(color: AppTheme.primary, width: 2),
                   ),
-                  child: const Icon(Icons.person, color: Colors.white, size: 20),
+                  child: const Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ),
             ],
@@ -95,14 +100,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           // Genre Filter
-          SliverToBoxAdapter(
-            child: _buildGenreFilter(),
-          ),
+          SliverToBoxAdapter(child: _buildGenreFilter()),
 
           // Section: All / Filtered Movies
           SliverToBoxAdapter(
             child: _buildSection(
-              _selectedGenreIndex == 0 ? 'All Movies' : _genres[_selectedGenreIndex],
+              _selectedGenreIndex == 0
+                  ? 'All Movies'
+                  : _genres[_selectedGenreIndex],
               _filteredMovies,
               horizontal: false,
             ),
@@ -111,7 +116,11 @@ class _HomeScreenState extends State<HomeScreen> {
           // Section: Top Rated
           if (_selectedGenreIndex == 0)
             SliverToBoxAdapter(
-              child: _buildSection('⭐ Top Rated', topRatedMovies, horizontal: true),
+              child: _buildSection(
+                '⭐ Top Rated',
+                topRatedMovies,
+                horizontal: true,
+              ),
             ),
 
           const SliverToBoxAdapter(child: SizedBox(height: 20)),
@@ -144,7 +153,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: 1,
                 ),
                 boxShadow: isSelected
-                    ? [BoxShadow(color: AppTheme.primary.withOpacity(0.4), blurRadius: 12, spreadRadius: 1)]
+                    ? [
+                        BoxShadow(
+                          color: AppTheme.primary.withOpacity(0.4),
+                          blurRadius: 12,
+                          spreadRadius: 1,
+                        ),
+                      ]
                     : [],
               ),
               child: Text(
@@ -162,7 +177,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSection(String title, List<Movie> movies, {bool horizontal = true}) {
+  Widget _buildSection(
+    String title,
+    List<Movie> movies, {
+    bool horizontal = true,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -184,10 +203,8 @@ class _HomeScreenState extends State<HomeScreen> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: movies.length,
-              itemBuilder: (context, index) => MovieCard(
-                movie: movies[index],
-                horizontal: true,
-              ),
+              itemBuilder: (context, index) =>
+                  MovieCard(movie: movies[index], horizontal: true),
             ),
           )
         else
@@ -202,43 +219,11 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSpacing: 12,
             ),
             itemCount: movies.length,
-            itemBuilder: (context, index) => MovieCard(
-              movie: movies[index],
-              horizontal: false,
-            ),
+            itemBuilder: (context, index) =>
+                MovieCard(movie: movies[index], horizontal: false),
           ),
         const SizedBox(height: 16),
       ],
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.surface,
-        border: const Border(top: BorderSide(color: AppTheme.cardBorder, width: 0.5)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10)],
-      ),
-      child: BottomNavigationBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        currentIndex: _bottomNavIndex,
-        selectedItemColor: AppTheme.primary,
-        unselectedItemColor: AppTheme.textMuted,
-        selectedLabelStyle: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600),
-        unselectedLabelStyle: GoogleFonts.inter(fontSize: 10),
-        onTap: (index) {
-          setState(() => _bottomNavIndex = index);
-          if (index == 1) Navigator.pushNamed(context, '/search');
-          if (index == 3) Navigator.pushNamed(context, '/profile');
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search_rounded), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark_rounded), label: 'Watchlist'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
-        ],
-      ),
     );
   }
 }
