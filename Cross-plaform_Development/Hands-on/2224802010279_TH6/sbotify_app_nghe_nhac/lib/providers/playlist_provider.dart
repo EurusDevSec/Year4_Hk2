@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import '../services/api_service.dart';
-import '../services/firebase_service.dart';
+// import '../services/firebase_service.dart';
 import '../models/song.dart';
 import '../models/playlist.dart';
 import '../data/sample_data.dart';
 
 class PlaylistProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
-  final FirebaseService _firebaseService = FirebaseService();
+  // final FirebaseService _firebaseService = FirebaseService();
 
   List<Song> _allSongs = [];
   List<Song> _searchResults = [];
@@ -77,7 +77,7 @@ class PlaylistProvider extends ChangeNotifier {
         createdAt: DateTime.now(),
       );
 
-      await _firebaseService.createPlaylist(playlist, userId);
+      // await _firebaseService.createPlaylist(playlist, userId);
       _userPlaylists.add(playlist);
       notifyListeners();
     } catch (e) {
@@ -92,7 +92,8 @@ class PlaylistProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _userPlaylists = await _firebaseService.getUserPlaylists(userId);
+      // _userPlaylists = await _firebaseService.getUserPlaylists(userId);
+      _userPlaylists = [];
       _isLoading = false;
       notifyListeners();
     } catch (e) {
