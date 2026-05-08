@@ -74,7 +74,17 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quản lý Người dùng'),
+        title: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Quản lý Người dùng'),
+            SizedBox(height: 2),
+            Text(
+              'MSSV: 2224802010279',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+            ),
+          ],
+        ),
         centerTitle: true,
         elevation: 0,
       ),
