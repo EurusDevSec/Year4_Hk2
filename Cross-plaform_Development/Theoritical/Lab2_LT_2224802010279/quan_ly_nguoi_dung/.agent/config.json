@@ -1,0 +1,25 @@
+{
+  "projectName": "quan_ly_nguoi_dung",
+  "projectType": "flutter",
+  "description": "Ứng dụng quản lý người dùng với Firebase Firestore",
+  "version": "1.0.0",
+  "framework": "Flutter",
+  "backend": "Firebase Firestore",
+  "stateManagement": "Provider/Riverpod",
+  "targetPlatforms": ["Android", "iOS", "Web", "Linux", "macOS", "Windows"],
+  "features": [
+    "Create Users",
+    "Read Users",
+    "Update Users",
+    "Delete Users",
+    "Real-time Data Sync",
+    "Error Handling",
+    "Loading States"
+  ],
+  "dependencies": {
+    "firebase_core": "^latest",
+    "cloud_firestore": "^latest",
+    "provider": "^latest",
+    "riverpod": "^latest"
+  }
+}
